@@ -4,7 +4,7 @@
   "description": "Server side client for uploading files to filecloud and interacting with the filecloud service",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "filecloud"
@@ -16,8 +16,13 @@
   "author": "Scott Morrison",
   "license": "ISC",
   "dependencies": {
+    "@babel/preset-env": "^7.24.8",
     "axios": "^1.7.2",
     "form-data": "^4.0.0",
+    "save-dev": "^0.0.1-security",
     "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }

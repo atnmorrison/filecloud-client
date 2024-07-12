@@ -2,7 +2,6 @@ import axios from 'axios';
 import FormData from 'form-data';
 import xml2js from 'xml2js';
 
-
 export default class filecloud{
 
     constructor(url, user, password) {
@@ -13,6 +12,7 @@ export default class filecloud{
         this.cookieJar = {
             cookies: undefined
         }
+
     }
 
     async login(){
