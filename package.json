@@ -9,6 +9,10 @@
   "keywords": [
     "filecloud"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:atnmorrison/filecloud-client.git"
+  },
   "author": "Scott Morrison",
   "license": "ISC",
   "dependencies": {
