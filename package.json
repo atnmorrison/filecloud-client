@@ -1,6 +1,6 @@
 {
   "name": "filecloud-client",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Server side client for uploading files to filecloud and interacting with the filecloud service",
   "main": "filecloud.js",
   "type": "module",
