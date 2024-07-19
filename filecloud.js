@@ -154,7 +154,7 @@ export default class filecloud{
             includeextrafields: 0
         } 
 
-        const options = Object.assign(defaults, options);
+        const body = Object.assign(defaults, options);
 
         return new Promise((resolve, reject) => {
 
