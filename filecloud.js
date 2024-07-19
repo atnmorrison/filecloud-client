@@ -21,6 +21,8 @@ export default class filecloud{
         await axios.post(self.url +'/core/loginguest', 'userid='+self.user+'&password='+self.password).then(response => {
         self.cookieJar.cookies = response.headers['set-cookie'];
             console.log(self.cookieJar.cookies);
+        }).catch(error =>{
+            return error;
         });
     }
     
@@ -66,12 +68,13 @@ export default class filecloud{
     }
 
 
-    async updateShare(shareid, sharename, sharelocation) {
+    async updateShare(options) {
         let self = this; 
-        let body = {
-            shareid: shareid,
-            sharename: sharename,
-            sharelocation: sharelocation,
+
+        let defaults = {
+            shareid: '',
+            sharename: '',
+            sharelocation: '',
             viewmode: 'DEFAULT',
             validityperiod: '',
             sharesizelimit: 0,
@@ -80,11 +83,10 @@ export default class filecloud{
             hidenotification: 0,
             sharepassword: ''
         }
-
-        console.log(body);
+        
+        const body = Object.assign(defaults, options);
 
         return new Promise((resolve, reject) => {
-
             axios.post(self.url+'/core/updateshare',      
             body,
             {
@@ -131,10 +133,12 @@ export default class filecloud{
 
     }
 
-    async getfilelist(path) {
+    async getfilelist(path, options) {
 
         let self = this; 
-        let body = {
+        
+  
+        let defaults = {
             path: path,
             sortdir: 1,
             sortby: 'name',
@@ -148,7 +152,9 @@ export default class filecloud{
             search: '',
             filestate: 0,
             includeextrafields: 0
-        }
+        } 
+
+        const options = Object.assign(defaults, options);
 
         return new Promise((resolve, reject) => {
 
@@ -196,5 +202,32 @@ export default class filecloud{
         });
    
     }
+
+
+    async copyFilesAndFolders(source, target, newfoldername) {
+
+        let folder_files = await this.getfilelist(source); 
+        if(folder_files.entries.meta[0].total[0] != '0' && folder_files.entries.entry) {
+            
+            for(let j=0; j<folder_files.entries.entry.length; ++j) {
+
+                if(folder_files.entries.entry[j].type[0] == 'dir') {
+                    console.log(folder_files.entries.entry[j].fullfilename[0]);
+                    await this.copyFilesAndFolders(folder_files.entries.entry[j].fullfilename[0], target+'/'+newfoldername, folder_files.entries.entry[j].name[0]);
+                } 
+
+                if(folder_files.entries.entry[j].type[0] == 'file') {
+                    await this.copyfile(source, folder_files.entries.entry[j].name[0], target+'/'+newfoldername);
+                }
+            }
+        }
+
+        return;
+
+    }
+
+
+
+
     
 }
