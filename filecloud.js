@@ -164,13 +164,15 @@ export default class filecloud{
                         for(const [key, value] of Object.entries(result.entries.meta)) {
                             returnValue['meta'][key] = value[0];
                         }
+
+                        console.log(result.entries);
                        
                         for(var i=0; i<result.entries.entry.length; ++i) {
                             let entry = {}; 
                             for(const [key, value] of Object.entries(result.entries.entry[i])) {
                                 entry[key] = value[0];
                             }
-                            returnValue[entries].push(entry);    
+                            returnValue['entries'].push(entry);    
                         }
 
                         resolve(returnValue); 
