@@ -80,7 +80,7 @@ export default class filecloud{
         const body = Object.assign(defaults, options);
 
         return new Promise((resolve, reject) => {      
-            sendPostRequest(self.url+'/core/updateshare', undefined, body).then((response) => {
+            this.sendPostRequest(self.url+'/core/updateshare', undefined, body).then((response) => {
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
