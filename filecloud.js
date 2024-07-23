@@ -218,6 +218,7 @@ export default class filecloud{
 
 
     sendPostRequest(url, params, body) {
+        
         let req = {
             headers: {
                 Cookie: this.cookieJar.cookies    
@@ -231,6 +232,8 @@ export default class filecloud{
         if(params) {
             return axios.post(url, params, req);
         } else {
+
+            req.headers['Content-Type'] = 'application/x-www-form-urlencoded';
             return axios.post(url, req);
         }
         
