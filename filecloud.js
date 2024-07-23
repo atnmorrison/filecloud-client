@@ -81,13 +81,13 @@ export default class filecloud{
 
         return new Promise((resolve, reject) => {      
             this.sendPostRequest(this.url+'/core/updateshare', undefined, body).then((response) => {
+                
+                console.log(response);
+                
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
                     } else {
-
-                        console.log(result);
-
                         let returnValue = {}; 
                         for(const [key, value] of Object.entries(result.shares.share[0])) {
                             returnValue[key] = value[0];
@@ -106,22 +106,18 @@ export default class filecloud{
     async uploadFile(fname, path, stream){
     
         console.log('uploading file '+fname);
-
         const form = new FormData();
         form.append('file', stream, fname);
         form.append('appname', 'explorer'); 
         form.append('path', path);
         form.append('filename', fname);
 
-        return axios.post(this.url +'/core/upload', form, {
-            headers: {
-                ...form.Cookies,
-                'Cookie': this.cookieJar.cookies,
-            }
-        }).then(response => {
-            return response.data; 
-        }).catch(error => {
-            return error.message+' : '+fname+' : ';
+        return new Promise((resolve, reject) => {    
+            this.sendFormPostRequest(this.url +'/core/upload', form).then(response => {
+                resolve(response.data); 
+            }).catch(error => {
+                reject(error.message+' : '+fname+' : ');
+            });
         });
 
     }
@@ -144,22 +140,40 @@ export default class filecloud{
             includeextrafields: 0
         } 
 
-        const body = Object.assign(defaults, options);
+        let body;
+        if(options) {
+            body = Object.assign(defaults, options);
+        } else {
+            body = defaults; 
+        }
 
         return new Promise((resolve, reject) => {
-
-            axios.post(this.url+'/core/getfilelist',      
-            body,
-            {
-                headers: {
-                    Cookie: this.cookieJar.cookies,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-            }}).then((response) => {
+            this.sendPostRequest(this.url+'/core/getfilelist', undefined, body).then((response) => {
+                
+                console.log(response.data);
+                
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
                     } else {
-                        resolve(result);
+
+                        let returnValue = {}; 
+                        returnValue['meta'] = {};
+                        returnValue['entries'] = []; 
+
+                        for(const [key, value] of Object.entries(result.entries.meta)) {
+                            returnValue['meta'][key] = value[0];
+                        }
+                       
+                        for(var i=0; i<result.entries.entry.length; ++i) {
+                            let entry = {}; 
+                            for(const [key, value] of Object.entries(result.entries.entry[i])) {
+                                entry[key] = value[0];
+                            }
+                            returnValue[entries].push(entry);    
+                        }
+
+                        resolve(returnValue); 
                     }
                 });
             }).catch((error) => {
@@ -234,15 +248,17 @@ export default class filecloud{
         
     }
 
-
     sendGetRequest(){
 
     }
 
-
-    sendFormPostRequest() {
-
-
+    sendFormPostRequest(url, form) {
+        return axios.post(url, form, {
+            headers: {
+                ...form.Cookies,
+                'Cookie': this.cookieJar.cookies,
+            }
+        });
     }
 
 

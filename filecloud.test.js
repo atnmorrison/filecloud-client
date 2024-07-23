@@ -39,6 +39,16 @@ test('update share folder', async () => {
     
 });
 
+test('uploadfile', async () => {
+
+    let fc = new FileCloud('https://files.test.com', 'tester', 'testpassword'); 
+    axios.post.mockResolvedValue({headers: { "set-cookie" : 'testcookie'}, data: "OK"});
+    let response = await fc.uploadFile('test.txt', '/myfiles/firstfolder', 'test file');
+
+    expect(response).toBe('OK');
+    
+});
+
 
 
 
