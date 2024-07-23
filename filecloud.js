@@ -225,16 +225,11 @@ export default class filecloud{
             }
         }
 
-        if(body) {
-            req.body = body; 
-        }
-
         if(params) {
             return axios.post(url, params, req);
         } else {
-
             req.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            return axios.post(url, req);
+            return axios.post(url, body, req);
         }
         
     }
