@@ -96,7 +96,7 @@ export default class filecloud{
                     }
                 });
             }).catch((error) => {
-                reject(error);
+                reject(error.data);
             });  
         }); 
 
@@ -231,7 +231,7 @@ export default class filecloud{
         if(params) {
             return axios.post(url, params, req);
         } else {
-            return axios.post(url, body);
+            return axios.post(url, req);
         }
         
     }
