@@ -33,7 +33,7 @@ export default class filecloud{
             this.sendPostRequest(this.url+'/core/createfolder', 'name='+folderName+'&path='+path).then(response => {
                 resolve(response.data);
             }).catch(error => {
-                reject(error);
+                reject(error.data);
             }); 
         });
     }
