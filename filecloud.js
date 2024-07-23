@@ -96,7 +96,7 @@ export default class filecloud{
                     }
                 });
             }).catch((error) => {
-                reject(error.data);
+                reject(error.data ? error.data : error);
             });  
         }); 
 
