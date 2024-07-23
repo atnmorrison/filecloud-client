@@ -15,62 +15,55 @@ export default class filecloud{
 
     }
 
-    async login(){
-        let self = this; 
+    login(){
+        return new Promise((resolve, reject) => {
+            this.sendPostRequest(this.url + '/core/loginguest', 'userid='+this.user+'&password='+this.password).then(response => {
+                this.cookieJar.cookies = response.headers['set-cookie'];
+                console.log(this.cookieJar.cookies);
+                resolve('success');
+            }).catch(error => {
+                reject(error);
+            });
 
-        await axios.post(self.url +'/core/loginguest', 'userid='+self.user+'&password='+self.password).then(response => {
-        self.cookieJar.cookies = response.headers['set-cookie'];
-            console.log(self.cookieJar.cookies);
-        }).catch(error =>{
-            return error;
+        }); 
+    }
+    
+    createFolder(folderName, path){
+        return new Promise((resolve, reject) => {
+            this.sendPostRequest(this.url+'/core/createfolder', 'name='+folderName+'&path='+path).then(response => {
+                resolve(response.data);
+            }).catch(error => {
+                reject(error);
+            }); 
         });
     }
-    
-    
-    async createFolder(folderName, path){
-
-        let self = this; 
-        try {
-            let response = await axios.post(self.url+'/core/createfolder', 'name='+folderName+'&path='+path, {
-            headers: {
-                Cookie: self.cookieJar.cookies    
-            }});
-            return response;
-        } catch (error){
-            
-            console.log('Folder creation failed '+error.message);
-        }
-    }
 
 
-    async quickShare(folderName, path) {
-        let self = this; 
-        
+    quickShare(folderName, path) {
         return new Promise((resolve, reject) => {
-
-            axios.post(self.url+'/core/quickshare', 'sharelocation='+path+'/'+folderName, {
-                headers: {
-                    Cookie: self.cookieJar.cookies    
-            }}).then((response) => {
-
-                console.log(response.data);
+            this.sendPostRequest(this.url+'/core/quickshare', 'sharelocation='+path+'/'+folderName).then((response) => {
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
                     } else {
-                        resolve(result);
+                        
+                        let returnValue = {}; 
+                        for(const [key, value] of Object.entries(result.shares.share[0])) {
+                            returnValue[key] = value[0];
+                        }
+                        resolve(returnValue);
                     }
                 });
             }).catch((error) => {
                 reject(error);
             });  
-        });     
+
+        });
     }
 
 
-    async updateShare(options) {
-        let self = this; 
-
+    updateShare(options) {
+        
         let defaults = {
             shareid: '',
             sharename: '',
@@ -86,19 +79,20 @@ export default class filecloud{
         
         const body = Object.assign(defaults, options);
 
-        return new Promise((resolve, reject) => {
-            axios.post(self.url+'/core/updateshare',      
-            body,
-            {
-                headers: {
-                    Cookie: self.cookieJar.cookies,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-            }}).then((response) => {
+        return new Promise((resolve, reject) => {      
+            sendPostRequest(self.url+'/core/updateshare', undefined, body).then((response) => {
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
                     } else {
-                        resolve(result);
+
+                        console.log(result);
+
+                        let returnValue = {}; 
+                        for(const [key, value] of Object.entries(result.shares.share[0])) {
+                            returnValue[key] = value[0];
+                        }
+                        resolve(returnValue);
                     }
                 });
             }).catch((error) => {
@@ -227,6 +221,36 @@ export default class filecloud{
     }
 
 
+
+    sendPostRequest(url, params, body) {
+        let req = {
+            headers: {
+                Cookie: this.cookieJar.cookies    
+            }
+        }
+
+        if(body) {
+            req.body = body; 
+        }
+
+        if(params) {
+            return axios.post(url, params, req);
+        } else {
+            return axios.post(url, body);
+        }
+        
+    }
+
+
+    sendGetRequest(){
+
+    }
+
+
+    sendFormPostRequest() {
+
+
+    }
 
 
     
