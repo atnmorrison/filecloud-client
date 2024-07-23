@@ -80,7 +80,7 @@ export default class filecloud{
         const body = Object.assign(defaults, options);
 
         return new Promise((resolve, reject) => {      
-            this.sendPostRequest(self.url+'/core/updateshare', undefined, body).then((response) => {
+            this.sendPostRequest(this.url+'/core/updateshare', undefined, body).then((response) => {
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
@@ -105,7 +105,6 @@ export default class filecloud{
 
     async uploadFile(fname, path, stream){
     
-        let self = this; 
         console.log('uploading file '+fname);
 
         const form = new FormData();
@@ -114,10 +113,10 @@ export default class filecloud{
         form.append('path', path);
         form.append('filename', fname);
 
-        return axios.post(self.url +'/core/upload', form, {
+        return axios.post(this.url +'/core/upload', form, {
             headers: {
                 ...form.Cookies,
-                'Cookie': self.cookieJar.cookies,
+                'Cookie': this.cookieJar.cookies,
             }
         }).then(response => {
             return response.data; 
@@ -129,9 +128,6 @@ export default class filecloud{
 
     async getfilelist(path, options) {
 
-        let self = this; 
-        
-  
         let defaults = {
             path: path,
             sortdir: 1,
@@ -152,11 +148,11 @@ export default class filecloud{
 
         return new Promise((resolve, reject) => {
 
-            axios.post(self.url+'/core/getfilelist',      
+            axios.post(this.url+'/core/getfilelist',      
             body,
             {
                 headers: {
-                    Cookie: self.cookieJar.cookies,
+                    Cookie: this.cookieJar.cookies,
                     'Content-Type': 'application/x-www-form-urlencoded'
             }}).then((response) => {
                 xml2js.parseString(response.data, (error, result) => {
@@ -175,8 +171,7 @@ export default class filecloud{
 
 
     async copyfile(path, name, copyto) {
- 
-        let self = this; 
+  
         console.log('copying file '+name);
 
         const form = new FormData();
@@ -184,10 +179,10 @@ export default class filecloud{
         form.append('name', name);
         form.append('copyto', copyto);
 
-        axios.post(self.url +'/core/copyfile', form, {
+        axios.post(this.url +'/core/copyfile', form, {
             headers: {
                 ...form.Cookies,
-                'Cookie': self.cookieJar.cookies,
+                'Cookie': this.cookieJar.cookies,
             }
         }).then(response => {
             return response.data; 
