@@ -47,7 +47,7 @@ fs.readFile('C:/test.txt', 'utf8', (err, data) => {
 fs.quickShare('firstfolder', '/myfiles');
 ```
 
-returns a json object 
+returns a javascript object
 
 
 ### Get list of files and folders in a directory 
@@ -56,9 +56,9 @@ returns a json object
 FCClient.getfilelist('/scott', {});
 ```
 
-returns a json object, example below
+returns a javascript object
 
-```json
+```javascript
 
 {
   meta: {
