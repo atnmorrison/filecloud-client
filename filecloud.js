@@ -17,7 +17,7 @@ export default class filecloud{
 
     login(){
         return new Promise((resolve, reject) => {
-            this.sendPostRequest(this.url + '/core/loginguest', 'userid='+this.user+'&password='+this.password).then(response => {
+            this.sendPostRequest('/core/loginguest', 'userid='+this.user+'&password='+this.password).then(response => {
                 this.cookieJar.cookies = response.headers['set-cookie'];
                 console.log(this.cookieJar.cookies);
                 resolve('success');
@@ -30,7 +30,7 @@ export default class filecloud{
     
     createFolder(folderName, path){
         return new Promise((resolve, reject) => {
-            this.sendPostRequest(this.url+'/core/createfolder', 'name='+folderName+'&path='+path).then(response => {
+            this.sendPostRequest('/core/createfolder', 'name='+folderName+'&path='+path).then(response => {
                 resolve(response.data);
             }).catch(error => {
                 reject(error.data);
@@ -41,7 +41,7 @@ export default class filecloud{
 
     quickShare(folderName, path) {
         return new Promise((resolve, reject) => {
-            this.sendPostRequest(this.url+'/core/quickshare', 'sharelocation='+path+'/'+folderName).then((response) => {
+            this.sendPostRequest('/core/quickshare', 'sharelocation='+path+'/'+folderName).then((response) => {
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
@@ -80,7 +80,7 @@ export default class filecloud{
         const body = Object.assign(defaults, options);
 
         return new Promise((resolve, reject) => {      
-            this.sendPostRequest(this.url+'/core/updateshare', undefined, body).then((response) => {
+            this.sendPostRequest('/core/updateshare', undefined, body).then((response) => {
                 
                 console.log(response);
                 
@@ -113,7 +113,7 @@ export default class filecloud{
         form.append('filename', fname);
 
         return new Promise((resolve, reject) => {    
-            this.sendFormPostRequest(this.url +'/core/upload', form).then(response => {
+            this.sendFormPostRequest('/core/upload', form).then(response => {
                 resolve(response.data); 
             }).catch(error => {
                 reject(error.message+' : '+fname+' : ');
@@ -148,7 +148,7 @@ export default class filecloud{
         }
 
         return new Promise((resolve, reject) => {
-            this.sendPostRequest(this.url+'/core/getfilelist', undefined, body).then((response) => {
+            this.sendPostRequest('/core/getfilelist', undefined, body).then((response) => {
                 
                 console.log(response.data);
                 
@@ -161,7 +161,7 @@ export default class filecloud{
                         returnValue['meta'] = {};
                         returnValue['entries'] = []; 
 
-                        for(const [key, value] of Object.entries(result.entries.meta)) {
+                        for(const [key, value] of Object.entries(result.entries.meta[0])) {
                             returnValue['meta'][key] = value[0];
                         }
 
@@ -189,21 +189,17 @@ export default class filecloud{
     async copyfile(path, name, copyto) {
   
         console.log('copying file '+name);
-
         const form = new FormData();
         form.append('path', path); 
         form.append('name', name);
         form.append('copyto', copyto);
 
-        axios.post(this.url +'/core/copyfile', form, {
-            headers: {
-                ...form.Cookies,
-                'Cookie': this.cookieJar.cookies,
-            }
-        }).then(response => {
-            return response.data; 
-        }).catch(error => {
-            console.log(error);
+        return new Promise((resolve, reject) => {
+            this.sendFormPostRequest('/core/copyfile', form).then(response => {
+                resolve(response.data); 
+            }).catch(error => {
+                reject(error);
+            });
         });
    
     }
@@ -211,18 +207,18 @@ export default class filecloud{
 
     async copyFilesAndFolders(source, target, newfoldername) {
 
+        await this.createFolder(newfoldername, target); 
         let folder_files = await this.getfilelist(source); 
-        if(folder_files.entries.meta[0].total[0] != '0' && folder_files.entries.entry) {
+        if(folder_files.meta.total != '0' && folder_files.entries) {
             
-            for(let j=0; j<folder_files.entries.entry.length; ++j) {
+            for(let j=0; j<folder_files.entries.length; ++j) {
 
-                if(folder_files.entries.entry[j].type[0] == 'dir') {
-                    console.log(folder_files.entries.entry[j].fullfilename[0]);
-                    await this.copyFilesAndFolders(folder_files.entries.entry[j].fullfilename[0], target+'/'+newfoldername, folder_files.entries.entry[j].name[0]);
+                if(folder_files.entries[j].type == 'dir') {
+                    await this.copyFilesAndFolders(folder_files.entries[j].fullfilename, target+'/'+newfoldername, folder_files.entries[j].name);
                 } 
 
-                if(folder_files.entries.entry[j].type[0] == 'file') {
-                    await this.copyfile(source, folder_files.entries.entry[j].name[0], target+'/'+newfoldername);
+                if(folder_files.entries[j].type == 'file') {
+                    await this.copyfile(source, folder_files.entries[j].name, target+'/'+newfoldername);
                 }
             }
         }
@@ -232,8 +228,8 @@ export default class filecloud{
     }
 
 
-
-    sendPostRequest(url, params, body) {
+    /*axios requests to include cookie*/ 
+    sendPostRequest(endpoint, params, body) {
         
         let req = {
             headers: {
@@ -242,20 +238,16 @@ export default class filecloud{
         }
 
         if(params) {
-            return axios.post(url, params, req);
+            return axios.post(this.url + endpoint , params, req);
         } else {
             req.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            return axios.post(url, body, req);
+            return axios.post(this.url + endpoint, body, req);
         }
         
     }
 
-    sendGetRequest(){
-
-    }
-
-    sendFormPostRequest(url, form) {
-        return axios.post(url, form, {
+    sendFormPostRequest(endpoint, form) {
+        return axios.post(this.url + endpoint, form, {
             headers: {
                 ...form.Cookies,
                 'Cookie': this.cookieJar.cookies,
