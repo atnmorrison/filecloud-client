@@ -149,9 +149,7 @@ export default class filecloud{
 
         return new Promise((resolve, reject) => {
             this.sendPostRequest('/core/getfilelist', undefined, body).then((response) => {
-                
-                console.log(response.data);
-                
+                                
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
@@ -164,8 +162,6 @@ export default class filecloud{
                         for(const [key, value] of Object.entries(result.entries.meta[0])) {
                             returnValue['meta'][key] = value[0];
                         }
-
-                        console.log(result.entries);
                        
                         for(var i=0; i<result.entries.entry.length; ++i) {
                             let entry = {}; 
@@ -188,19 +184,20 @@ export default class filecloud{
 
     async copyfile(path, name, copyto) {
   
-        console.log('copying file '+name);
-        const form = new FormData();
-        form.append('path', path); 
-        form.append('name', name);
-        form.append('copyto', copyto);
+        if(name) {
+            const form = new FormData();
+            form.append('path', path); 
+            form.append('name', name);
+            form.append('copyto', copyto);
 
-        return new Promise((resolve, reject) => {
-            this.sendFormPostRequest('/core/copyfile', form).then(response => {
-                resolve(response.data); 
-            }).catch(error => {
-                reject(error);
+            return new Promise((resolve, reject) => {
+                this.sendFormPostRequest('/core/copyfile', form).then(response => {
+                    resolve(response.data); 
+                }).catch(error => {
+                    reject(error);
+                });
             });
-        });
+        }
    
     }
 

@@ -121,7 +121,20 @@ returns a javascript object
 ``` 
 
 
-for any calls that haven't been implemented by the library base calls can be used
+### Deep copy a folder from one location to another 
+
+
+```javascript
+
+await FCClient.copyFilesAndFolders('/myfiels/firstfolder', '/myfiles', 'copiedfolder');
+
+
+```
+
+
+### General calls 
+
+For any calls that haven't been implemented by the library base calls can be used
 
 url is the endpoint
 params are the paramter string 
@@ -137,8 +150,31 @@ for example, body can be ommited, params are in url paramters string fromat
 FCClient.sendPostRequest('/core/createfolder', 'name='+folderName+'&path='+path)
 ```
 
+If you don't have any url parameters but have a body pass undefined or null for parameters and include the body
+
+```javascript
+FCClient.sendPostRequest('/core/getfilelist', undefined, body)
+```
+
+
+install form-data package to generate a from to send to a post request 
+
 
 ```javascript
 FCClient.sendFormPostRequest(url, form)
 ```
 
+```javascript
+
+const form = new FormData();
+form.append('path', '/myfiles'); 
+form.append('name', 'test.txt');
+form.append('copyto', '/myfiles/newfolder');
+
+FCClient.sendFormPostRequest('/core/copyfile', form).then(response => {
+  console.log(response.data);
+}).catch(error => {
+  console.log(error);
+});
+          
+```
