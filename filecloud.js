@@ -31,7 +31,20 @@ export default class filecloud{
     createFolder(folderName, path){
         return new Promise((resolve, reject) => {
             this.sendPostRequest('/core/createfolder', 'name='+folderName+'&path='+path).then(response => {
-                resolve(response.data);
+                
+                xml2js.parseString(response.data, (error, result) => {
+                    if(error) {
+                        reject(error);
+                    } else {
+                        let returnValue = {}; 
+                        for(const [key, value] of Object.entries(result.commands.command[0])) {
+                            returnValue[key] = value[0];
+                        }
+                        resolve(returnValue);
+                    }
+                });
+                
+            
             }).catch(error => {
                 reject(error.data);
             }); 

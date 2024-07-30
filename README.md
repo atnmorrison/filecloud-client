@@ -1,6 +1,6 @@
 # Filecloud Client 
 
-This package provides a client for interacting with the filecloud user api. It provides a simple implentation for for node.js scripts to upload files, create folders and copy folders. The goal is to support all user api's provided by file cloud. 
+This package provides a client for interacting with the filecloud user api. It provides a simple implentation for node.js scripts to upload files, create folders and copy folders. The goal is to support all user api's provided by file cloud. 
 
 ## Usage 
 
@@ -23,6 +23,16 @@ await FCClient.login();
 
 FCClient.createFolder('firstfolder', '/myfiles');
 
+```
+
+returns a javascript object on success
+
+```javascript
+    {
+      type: 'createfolder',
+      result: '1',
+      message: 'Folder Created Successfully'
+    }
 ```
 
 
