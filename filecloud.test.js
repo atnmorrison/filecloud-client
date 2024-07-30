@@ -19,6 +19,18 @@ test('login to filecloud', async () => {
 });
 
 
+test('create folder', async() => {
+
+    let fc = new FileCloud('https://files.test.com', 'tester', 'testpassword'); 
+    axios.post.mockResolvedValue({headers: { "set-cookie" : 'testcookie'}, data: "<commands><command><type>createfolder</type><result>1</result><message>Folder Created Successfully</message></command></commands>"});
+    let response = await fc.createFolder('firstfolder', '/test');
+
+    console.log(response);
+
+
+});
+
+
 test('quickShare folder', async () => {
 
     let fc = new FileCloud('https://files.test.com', 'tester', 'testpassword'); 
@@ -51,8 +63,6 @@ test('uploadfile', async () => {
 
 
 test('getfilelist', async () => {
-
-
 
     let fc = new FileCloud('https://files.test.com', 'tester', 'testpassword'); 
     axios.post.mockResolvedValue({headers: { "set-cookie" : 'testcookie'}, data: "<entries><meta><parentpath>/</parentpath><total>11</total><realpath>/scott</realpath><canupload>1</canupload>"+
