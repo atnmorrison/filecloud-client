@@ -232,9 +232,23 @@ export default class filecloud{
                 }
             }
         }
-
         return;
+    }
 
+    async renameOrMove(fromname, toname) {
+
+        const form = new FormData();
+        form.append('fromname', fromname); 
+        form.append('toname', toname);
+
+        return new Promise((resolve, reject) => {
+            this.sendFormPostRequest('/core/renameormove', form).then(response => {
+                resolve(response.data); 
+            }).catch(error => {
+                reject(error);
+            });
+        });
+        
     }
 
 
