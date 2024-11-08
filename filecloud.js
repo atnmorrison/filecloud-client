@@ -93,10 +93,7 @@ export default class filecloud{
         const body = Object.assign(defaults, options);
 
         return new Promise((resolve, reject) => {      
-            this.sendPostRequest('/core/updateshare', undefined, body).then((response) => {
-                
-                console.log(response);
-                
+            this.sendPostRequest('/core/updateshare', undefined, body).then((response) => {                
                 xml2js.parseString(response.data, (error, result) => {
                     if(error) {
                         reject(error);
@@ -195,6 +192,11 @@ export default class filecloud{
     }
 
 
+
+
+
+
+
     async copyfile(path, name, copyto) {
   
         if(name) {
@@ -261,7 +263,7 @@ export default class filecloud{
         }
 
         return axios.get(this.url + endpoint+'?'+params, req);
-        
+
     }
 
 
