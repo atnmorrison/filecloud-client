@@ -252,6 +252,19 @@ export default class filecloud{
     }
 
 
+    sendGetRequest(endpoint, params) {
+
+        let req = {
+            headers: {
+                Cookie: this.cookieJar.cookies    
+            }
+        }
+
+        return axios.get(this.url + endpoint+'?'+params, req);
+        
+    }
+
+
     /*axios requests to include cookie*/ 
     sendPostRequest(endpoint, params, body) {
         
